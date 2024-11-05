@@ -11,7 +11,7 @@ import jakarta.persistence.*; // Importăm jakarta.persistence pentru JPA
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int employeeId;
 
     private String name;
@@ -37,6 +37,46 @@ public class Employee {
         this.isAvailable = true;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public float getSalary() {
+        return salary;
+    }
+
+    public void setSalary(float salary) {
+        this.salary = salary;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    public Project getAssignedProject() {
+        return assignedProject;
+    }
+
+    public void setAssignedProject(Project assignedProject) {
+        this.assignedProject = assignedProject;
+    }
+
     public void updateAvailability(boolean status) {
         this.isAvailable = status;
     }
@@ -52,5 +92,9 @@ public class Employee {
         this.role = role;
         this.isAvailable = isAvailable;
         this.assignedProject = assignedProject;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
     }
 }

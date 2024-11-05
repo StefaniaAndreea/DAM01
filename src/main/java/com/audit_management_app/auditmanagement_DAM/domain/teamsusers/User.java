@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int userId;
 
     private String username;
@@ -34,6 +34,38 @@ public class User {
         };
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
     public enum Role {
         ADMINISTRATOR, MANAGER, PENTESTER
     }
@@ -44,5 +76,9 @@ public class User {
         this.password = password;
         this.role = role;
         this.employee = employee;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 }

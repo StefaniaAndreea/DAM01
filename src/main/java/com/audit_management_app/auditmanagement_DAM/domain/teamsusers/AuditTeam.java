@@ -13,7 +13,7 @@ import java.util.List;
 public class AuditTeam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int teamId;
 
     private String teamName;
@@ -42,6 +42,22 @@ public class AuditTeam {
         employee.updateAvailability(true);
     }
 
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public Project getAssignedProject() {
+        return assignedProject;
+    }
+
+    public void setAssignedProject(Project assignedProject) {
+        this.assignedProject = assignedProject;
+    }
+
     public void assignToProject(Project project) {
         this.assignedProject = project;
     }
@@ -56,5 +72,17 @@ public class AuditTeam {
         this.teamId = teamId;
         this.teamName = teamName;
         this.assignedProject = assignedProject;
+    }
+
+    public int getTeamId() {
+        return teamId;
+    }
+
+    public List<Employee> getMembers() {
+        return members;
+    }
+
+    public void setMembers(List<Employee> members) {
+        this.members = members;
     }
 }

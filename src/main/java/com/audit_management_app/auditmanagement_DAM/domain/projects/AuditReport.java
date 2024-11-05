@@ -13,8 +13,40 @@ import java.util.Date;
 public class AuditReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int reportId;
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public Date getSubmissionDate() {
+        return submissionDate;
+    }
+
+    public void setSubmissionDate(Date submissionDate) {
+        this.submissionDate = submissionDate;
+    }
+
+    public Employee getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Employee author) {
+        this.author = author;
+    }
 
     @ManyToOne
     @JoinColumn(name = "project_id")
@@ -42,5 +74,8 @@ public class AuditReport {
         this.author = author;
     }
 
+    public int getReportId() {
+        return reportId;
+    }
 
 }

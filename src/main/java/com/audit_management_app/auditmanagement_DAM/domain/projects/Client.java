@@ -11,7 +11,7 @@ import java.util.List;
 public class Client {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int clientId;
 
     private String name;
@@ -27,6 +27,38 @@ public class Client {
         project.setClient(this);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<Project> getActiveProjects() {
         return projects.stream()
                 .filter(project -> project.getStatus() == Project.Status.ONGOING)
@@ -40,5 +72,22 @@ public class Client {
         this.description = description;
         this.contactEmail = contactEmail;
     }
+    public Client(String name, String contactPerson, String description, String contactEmail) {
+        this.name = name;
+        this.contactPerson = contactPerson;
+        this.description = description;
+        this.contactEmail = contactEmail;
+    }
 
+    public int getClientId() {
+        return clientId;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
+    }
 }
