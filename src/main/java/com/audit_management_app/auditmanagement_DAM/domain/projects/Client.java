@@ -1,6 +1,7 @@
 package com.audit_management_app.auditmanagement_DAM.domain.projects;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.util.List;
@@ -8,10 +9,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int clientId;
 
     private String name;
@@ -59,35 +62,7 @@ public class Client {
         this.description = description;
     }
 
-    public List<Project> getActiveProjects() {
-        return projects.stream()
-                .filter(project -> project.getStatus() == Project.Status.ONGOING)
-                .toList();
-    }
-
-    public Client(int clientId, String name, String contactPerson, String description, String contactEmail) {
-        this.clientId = clientId;
-        this.name = name;
-        this.contactPerson = contactPerson;
-        this.description = description;
-        this.contactEmail = contactEmail;
-    }
-    public Client(String name, String contactPerson, String description, String contactEmail) {
-        this.name = name;
-        this.contactPerson = contactPerson;
-        this.description = description;
-        this.contactEmail = contactEmail;
-    }
-
-    public int getClientId() {
-        return clientId;
-    }
-
     public List<Project> getProjects() {
         return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
     }
 }

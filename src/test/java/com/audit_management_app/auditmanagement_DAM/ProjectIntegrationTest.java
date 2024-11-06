@@ -90,5 +90,24 @@ public class ProjectIntegrationTest {
         assertNotNull(savedEmployee2, "Angajatul 2 ar trebui să fie salvat în baza de date");
         assertTrue(savedTeam.getMembers().contains(savedEmployee1), "Echipa ar trebui să conțină angajatul 1");
         assertTrue(savedTeam.getMembers().contains(savedEmployee2), "Echipa ar trebui să conțină angajatul 2");
+
+        // Verificăm actualizarea progresului proiectului
+        project.setProgress(50.0f);
+        entityManager.merge(project);
+
+        Project updatedProject = entityManager.find(Project.class, project.getProjectId());
+        assertEquals(50.0f, updatedProject.getProgress(), "Progresul ar trebui să fie actualizat la 50%");
+
+        // Verificăm actualizarea statusului proiectului
+        project.setStatus(Project.Status.COMPLETED);
+        entityManager.merge(project);
+
+        Project updatedProjectStatus = entityManager.find(Project.class, project.getProjectId());
+        assertEquals(Project.Status.COMPLETED, updatedProjectStatus.getStatus(), "Statusul ar trebui să fie 'COMPLETED'");
+
+        // Test pentru eliminarea clientului și verificarea impactului asupra proiectului
+        entityManager.remove(client);
+        Project projectWithoutClient = entityManager.find(Project.class, project.getProjectId());
+        assertNull(projectWithoutClient.getClient(), "Clientul ar trebui să fie eliminat din proiect după ștergerea clientului asociat");
     }
 }

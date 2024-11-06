@@ -2,18 +2,22 @@ package com.audit_management_app.auditmanagement_DAM.domain.teamsusers;
 
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AuditTeam {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int teamId;
 
     private String teamName;
@@ -24,7 +28,7 @@ public class AuditTeam {
             joinColumns = @JoinColumn(name = "team_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
-    private List<Employee> members;
+    private List<Employee> members=new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "assigned_project_id")
@@ -42,6 +46,19 @@ public class AuditTeam {
         employee.updateAvailability(true);
     }
 
+
+
+
+    public void assignToProject(Project project) {
+        this.assignedProject = project;
+    }
+
+    public void disbandTeam() {
+        members.forEach(member -> member.updateAvailability(true));
+        members.clear();
+        this.assignedProject = null;
+    }
+
     public String getTeamName() {
         return teamName;
     }
@@ -57,21 +74,8 @@ public class AuditTeam {
     public void setAssignedProject(Project assignedProject) {
         this.assignedProject = assignedProject;
     }
-
-    public void assignToProject(Project project) {
-        this.assignedProject = project;
-    }
-
-    public void disbandTeam() {
-        members.forEach(member -> member.updateAvailability(true));
-        members.clear();
-        this.assignedProject = null;
-    }
-
-    public AuditTeam(int teamId, String teamName, Project assignedProject) {
-        this.teamId = teamId;
-        this.teamName = teamName;
-        this.assignedProject = assignedProject;
+    public void setMembers(List<Employee> members) {
+        this.members = members;
     }
 
     public int getTeamId() {
@@ -80,9 +84,5 @@ public class AuditTeam {
 
     public List<Employee> getMembers() {
         return members;
-    }
-
-    public void setMembers(List<Employee> members) {
-        this.members = members;
     }
 }

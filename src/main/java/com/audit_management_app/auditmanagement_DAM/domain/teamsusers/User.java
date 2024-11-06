@@ -1,16 +1,19 @@
 package com.audit_management_app.auditmanagement_DAM.domain.teamsusers;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
 @Entity
+ @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int userId;
 
     private String username;
@@ -32,6 +35,11 @@ public class User {
             case MANAGER -> "Manager Access";
             case PENTESTER -> "Limited Access";
         };
+    }
+
+
+    public enum Role {
+        ADMINISTRATOR, MANAGER, PENTESTER
     }
 
     public String getUsername() {
@@ -64,21 +72,5 @@ public class User {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public enum Role {
-        ADMINISTRATOR, MANAGER, PENTESTER
-    }
-
-    public User(int userId, String username, String password, Role role, Employee employee) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.employee = employee;
-    }
-
-    public int getUserId() {
-        return userId;
     }
 }

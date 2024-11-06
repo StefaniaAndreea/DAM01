@@ -2,16 +2,19 @@ package com.audit_management_app.auditmanagement_DAM.domain.projects;
 
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.Employee;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int taskId;
 
     private String description;
@@ -39,13 +42,6 @@ public class Task {
         PENDING, IN_PROGRESS, COMPLETED
     }
 
-    public Task(int taskId, String description, Employee assignedTo, TaskStatus status, Project project) {
-        this.taskId = taskId;
-        this.description = description;
-        this.assignedTo = assignedTo;
-        this.status = status;
-        this.project = project;
-    }
 
     public String getDescription() {
         return description;
@@ -77,9 +73,5 @@ public class Task {
 
     public void setProject(Project project) {
         this.project = project;
-    }
-
-    public int getTaskId() {
-        return taskId;
     }
 }

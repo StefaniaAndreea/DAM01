@@ -2,16 +2,19 @@ package com.audit_management_app.auditmanagement_DAM.domain.teamsusers;
 
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*; // Importăm jakarta.persistence pentru JPA
 
 @Data
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @EqualsAndHashCode.Include
     private int employeeId;
 
     private String name;
@@ -35,6 +38,16 @@ public class Employee {
     public void removeFromProject() {
         this.assignedProject = null;
         this.isAvailable = true;
+    }
+
+
+
+    public void updateAvailability(boolean status) {
+        this.isAvailable = status;
+    }
+
+    public enum Role {
+        ADMINISTRATOR, MANAGER, PENTESTER
     }
 
     public String getName() {
@@ -74,23 +87,6 @@ public class Employee {
     }
 
     public void setAssignedProject(Project assignedProject) {
-        this.assignedProject = assignedProject;
-    }
-
-    public void updateAvailability(boolean status) {
-        this.isAvailable = status;
-    }
-
-    public enum Role {
-        ADMINISTRATOR, MANAGER, PENTESTER
-    }
-
-    public Employee(int employeeId, String name, float salary, Role role, boolean isAvailable, Project assignedProject) {
-        this.employeeId = employeeId;
-        this.name = name;
-        this.salary = salary;
-        this.role = role;
-        this.isAvailable = isAvailable;
         this.assignedProject = assignedProject;
     }
 
