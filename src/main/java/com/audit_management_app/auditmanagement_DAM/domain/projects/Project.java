@@ -19,19 +19,16 @@ import java.util.List;
 public class Project {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @EqualsAndHashCode.Include
     private int projectId;
-
 
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
     private AuditTeam team;
 
     @Temporal(TemporalType.DATE)
@@ -41,98 +38,17 @@ public class Project {
     private Date endDate;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private StatusProiect status;
 
     private float progress;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<AuditReport> reports= new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Task> tasks= new ArrayList<>();
 
-    public void addReport(AuditReport report) {
-        reports.add(report);
-        report.setProject(this);
-    }
-
-    public void addTask(Task task) {
-        tasks.add(task);
-        task.setProject(this);
-    }
-
-    public void markAsCompleted() {
-        this.status = Status.ARCHIVED;
-    }
-
-    public void calculateProgress() {
-        long completedTasks = tasks.stream().filter(task -> task.getStatus() == Task.TaskStatus.COMPLETED).count();
-        this.progress = (float) completedTasks / tasks.size() * 100;
-    }
-
-
-
-    public enum Status {
+    public enum StatusProiect {
         ONGOING, COMPLETED, ARCHIVED
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public AuditTeam getTeam() {
-        return team;
-    }
-
-    public void setTeam(AuditTeam team) {
-        this.team = team;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public float getProgress() {
-        return progress;
-    }
-
-    public void setProgress(float progress) {
-        this.progress = progress;
-    }
-
-    public int getProjectId() {
-        return projectId;
     }
 }

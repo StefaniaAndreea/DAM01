@@ -20,14 +20,13 @@ public class Task {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "assigned_to")
     private Employee assignedTo;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "project_id")
+
     private Project project;
 
     public void markAsDone() {
@@ -40,38 +39,5 @@ public class Task {
 
     public enum TaskStatus {
         PENDING, IN_PROGRESS, COMPLETED
-    }
-
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Employee getAssignedTo() {
-        return assignedTo;
-    }
-
-    public void setAssignedTo(Employee assignedTo) {
-        this.assignedTo = assignedTo;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
     }
 }

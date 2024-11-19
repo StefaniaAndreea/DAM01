@@ -26,6 +26,17 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>8.0.0.Final</version> <!-- Asigură-te că folosești o versiune compatibilă cu proiectul tău -->
+		</dependency>
+		<dependency>
+			<groupId>jakarta.el</groupId>
+			<artifactId>jakarta.el-api</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
 
 		<!-- Spring Data JPA for database interaction -->
 		<dependency>

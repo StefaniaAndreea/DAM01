@@ -6,22 +6,20 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
+@Data @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class AuditReport {
+public class AuditReport implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include
+    @Id @EqualsAndHashCode.Include
+    @GeneratedValue
     private int reportId;
 
-
     @ManyToOne
-    @JoinColumn(name = "project_id")
     private Project project;
 
     private String filePath;
@@ -31,6 +29,8 @@ public class AuditReport {
 
     @ManyToOne
     private Employee author;
+    @OneToMany(mappedBy = "report",cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Vulnerability> vulnerabilities = new ArrayList<>();
 
     public void submitReport(String filePath, Employee author) {
         this.filePath = filePath;
@@ -38,35 +38,11 @@ public class AuditReport {
         this.submissionDate = new Date();
     }
 
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
+    public AuditReport(int reportId, String filePath, Project project, Date submissionDate, Employee author) {
+        this.reportId = reportId;
         this.filePath = filePath;
-    }
-
-    public Date getSubmissionDate() {
-        return submissionDate;
-    }
-
-    public void setSubmissionDate(Date submissionDate) {
+        this.project = project;
         this.submissionDate = submissionDate;
-    }
-
-    public Employee getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Employee author) {
         this.author = author;
     }
 }
