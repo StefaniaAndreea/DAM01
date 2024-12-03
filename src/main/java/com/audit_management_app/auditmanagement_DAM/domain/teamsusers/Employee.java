@@ -1,10 +1,9 @@
 package com.audit_management_app.auditmanagement_DAM.domain.teamsusers;
 
-import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*; // Importăm jakarta.persistence pentru JPA
+import jakarta.persistence.*;
 
 @Data
 @NoArgsConstructor
@@ -13,23 +12,44 @@ import jakarta.persistence.*; // Importăm jakarta.persistence pentru JPA
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int employeeId;
 
     private String name;
 
-@ManyToOne
-private AuditTeam team;
+    @ManyToOne
+    @JoinColumn(name = "team_id", nullable = true)
+    private AuditTeam team;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EmployeeRole role;
 
     private float salary;
 
+    @Column(nullable = false)
     private boolean isAvailable;
 
     public enum EmployeeRole {
-        ADMINISTRATOR, MANAGER, PENTESTER
+        AUDITOR,
+        PENTESTER,
+        MANAGER
+    }
+
+    public Employee(String name, AuditTeam team, EmployeeRole role, float salary, boolean isAvailable) {
+        this.name = name;
+        this.team = team;
+        this.role = role;
+        this.salary = salary;
+        this.isAvailable = isAvailable;
+    }
+
+    public void assignToTeam(AuditTeam team) {
+        this.team = team;
+    }
+
+    public void updateAvailability(boolean availability) {
+        this.isAvailable = availability;
     }
 }

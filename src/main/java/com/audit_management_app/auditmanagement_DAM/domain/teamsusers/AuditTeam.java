@@ -16,14 +16,34 @@ import java.util.List;
 public class AuditTeam {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int teamId;
 
     private String teamName;
 
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Employee> members = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "assigned_project_id")
     private Project assignedProject;
+
+    public AuditTeam(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public void addMember(Employee employee) {
+        members.add(employee);
+        employee.setTeam(this);
+    }
+
+    public void removeMember(Employee employee) {
+        members.remove(employee);
+        employee.setTeam(null);
+    }
+
+    public void assignProject(Project project) {
+        this.assignedProject = project;
+    }
 }

@@ -11,15 +11,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Data @NoArgsConstructor @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 public class AuditReport implements Serializable {
 
-    @Id @EqualsAndHashCode.Include
-    @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int reportId;
 
     @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     private String filePath;
@@ -28,8 +32,10 @@ public class AuditReport implements Serializable {
     private Date submissionDate;
 
     @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
     private Employee author;
-    @OneToMany(mappedBy = "report",cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Vulnerability> vulnerabilities = new ArrayList<>();
 
     public void submitReport(String filePath, Employee author) {

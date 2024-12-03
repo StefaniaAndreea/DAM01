@@ -8,22 +8,26 @@ import jakarta.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
- @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int userId;
 
+    @Column(nullable = false, unique = true)
     private String username;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
 
-
     @OneToOne
+    @JoinColumn(name = "employee_id", nullable = false, unique = true)
     private Employee employee;
 
     public boolean authenticate(String username, String password) {
@@ -38,9 +42,14 @@ public class User {
         };
     }
 
-
     public enum UserRole {
         ADMINISTRATOR, MANAGER, PENTESTER
     }
 
+    public User(String username, String password, UserRole role, Employee employee) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.employee = employee;
+    }
 }

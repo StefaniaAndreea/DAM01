@@ -19,16 +19,18 @@ import java.util.List;
 public class Project {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private int projectId;
 
     private String name;
 
     @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
     @ManyToOne
+    @JoinColumn(name = "team_id", nullable = false)
     private AuditTeam team;
 
     @Temporal(TemporalType.DATE)
@@ -38,16 +40,16 @@ public class Project {
     private Date endDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StatusProiect status;
 
     private float progress;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<AuditReport> reports= new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<AuditReport> reports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Task> tasks= new ArrayList<>();
-
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
     public enum StatusProiect {
         ONGOING, COMPLETED, ARCHIVED

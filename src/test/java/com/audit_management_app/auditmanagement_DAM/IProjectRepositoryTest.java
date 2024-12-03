@@ -69,9 +69,14 @@ public class IProjectRepositoryTest {
         client.setContactEmail("alice.smith@securesolutions.com");
         clientRepository.save(client);
 
+        AuditTeam team = new AuditTeam();
+        team.setTeamName("Network Audit Team");
+        auditTeamRepository.save(team);
+
         Project project = new Project();
         project.setName("Network Security Review");
         project.setClient(client);
+        project.setTeam(team); // Asociem un AuditTeam proiectului
         project.setStartDate(new Date());
         project.setEndDate(new Date());
         project.setStatus(Project.StatusProiect.COMPLETED);
