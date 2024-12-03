@@ -19,6 +19,9 @@ public class Employee {
 
     private String name;
 
+@ManyToOne
+private AuditTeam team;
+
     @Enumerated(EnumType.STRING)
     private EmployeeRole role;
 

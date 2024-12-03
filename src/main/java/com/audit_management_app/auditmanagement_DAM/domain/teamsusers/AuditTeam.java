@@ -22,7 +22,7 @@ public class AuditTeam {
 
     private String teamName;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Employee> members = new ArrayList<>();
 
     private Project assignedProject;

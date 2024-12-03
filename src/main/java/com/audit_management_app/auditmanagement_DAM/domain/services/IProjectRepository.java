@@ -16,4 +16,9 @@ public interface IProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> findByStatus(@Param("status") Project.StatusProiect status);
 
     Project findByProjectId(int projectId);
+
+    @Query("SELECT p FROM Project p WHERE p.client.name LIKE %:clientName%")
+    List<Project> findProjectsByClientName(@Param("clientName") String clientName);
+
 }
+
