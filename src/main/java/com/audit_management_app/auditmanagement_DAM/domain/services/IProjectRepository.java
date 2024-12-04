@@ -25,4 +25,6 @@ public interface IProjectRepository extends JpaRepository<Project, Integer> {
     // Găsește proiecte asociate unui client, folosind JOIN FETCH pentru a evita problema N+1
     @Query("SELECT p FROM Project p JOIN FETCH p.client c WHERE c.name LIKE %:clientName%")
     List<Project> findProjectsByClientName(@Param("clientName") String clientName);
+
+
 }
