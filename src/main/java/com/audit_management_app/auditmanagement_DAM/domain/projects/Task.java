@@ -15,7 +15,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private int taskId;
+    private Integer taskId;
 
     private String description;
 
@@ -31,8 +31,6 @@ public class Task {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-
-
     public enum TaskStatus {
         PENDING, IN_PROGRESS, COMPLETED
     }
@@ -42,5 +40,18 @@ public class Task {
         this.assignedTo = assignedTo;
         this.status = status;
         this.project = project;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return taskId != null && taskId.equals(task.taskId);
+    }
+
+    @Override
+    public int hashCode() {
+        return taskId != null ? taskId.hashCode() : 0;
     }
 }

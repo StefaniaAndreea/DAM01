@@ -59,31 +59,34 @@ public class TaskServiceTest {
         employee.setAvailable(true);
         employee = employeeRepository.save(employee);
 
-        // Creăm proiectul și sarcina
+        // Creăm proiectul
         Project project = new Project();
         project.setName("Test Project");
-        project.setClient(client); // Setăm relația ManyToOne cu Client
-        project.setTeam(team); // Setăm relația ManyToOne cu AuditTeam
+        project.setClient(client);
+        project.setTeam(team);
         project.setStartDate(new Date());
         project.setEndDate(new Date());
         project.setStatus(Project.StatusProiect.ONGOING);
         project.setTasks(new ArrayList<>());
 
+        // Creăm sarcina
         Task task = new Task();
         task.setDescription("Test Task");
         task.setStatus(Task.TaskStatus.PENDING);
-        task.setAssignedTo(employee); // Setăm angajatul
-        project.getTasks().add(task);
+        task.setAssignedTo(employee);
+        task.setProject(project); // Asociem proiectul sarcinii
+        project.getTasks().add(task); // Adăugăm sarcina la proiect
 
-        project = projectRepository.save(project);
+        project = projectRepository.save(project); // Salvăm proiectul și implicit sarcina
 
         // Act: Marcăm sarcina ca "DONE"
-        taskService.markAsDone(task.getTaskId());
+        Task savedTask = project.getTasks().get(0); // Luăm sarcina din proiectul salvat
+        taskService.markAsDone(savedTask.getTaskId());
 
         // Assert: Verificăm că statusul sarcinii este actualizat
         Project updatedProject = projectRepository.findById(project.getProjectId()).orElseThrow();
         Task updatedTask = updatedProject.getTasks().stream()
-                .filter(t -> Long.valueOf(t.getTaskId()).equals(Long.valueOf(task.getTaskId())))
+                .filter(t -> t.getTaskId().equals(savedTask.getTaskId()))
                 .findFirst()
                 .orElseThrow();
 
@@ -113,8 +116,8 @@ public class TaskServiceTest {
         // Creăm proiectul și sarcina
         Project project = new Project();
         project.setName("Test Project");
-        project.setClient(client); // Setăm relația ManyToOne cu Client
-        project.setTeam(team); // Setăm relația ManyToOne cu AuditTeam
+        project.setClient(client);
+        project.setTeam(team);
         project.setStartDate(new Date());
         project.setEndDate(new Date());
         project.setStatus(Project.StatusProiect.ONGOING);
@@ -123,7 +126,8 @@ public class TaskServiceTest {
         Task task = new Task();
         task.setDescription("Test Task");
         task.setStatus(Task.TaskStatus.PENDING);
-        task.setAssignedTo(employee); // Setăm angajatul
+        task.setAssignedTo(employee);
+        task.setProject(project); // Setăm proiectul în sarcină
         project.getTasks().add(task);
 
         project = projectRepository.save(project);
@@ -135,13 +139,16 @@ public class TaskServiceTest {
         newEmployee.setAvailable(true);
         newEmployee = employeeRepository.save(newEmployee);
 
+        assertNotNull(task.getTaskId(), "Task ID should not be null after saving.");
+        assertNotNull(newEmployee.getEmployeeId(), "New Employee ID should not be null after saving.");
+
         // Act: Atribuim angajatul sarcinii
         taskService.assignEmployee(task.getTaskId(), newEmployee.getEmployeeId());
 
         // Assert: Verificăm că sarcina este asociată cu angajatul corect
         Project updatedProject = projectRepository.findById(project.getProjectId()).orElseThrow();
         Task updatedTask = updatedProject.getTasks().stream()
-                .filter(t -> Long.valueOf(t.getTaskId()).equals(Long.valueOf(task.getTaskId())))
+                .filter(t -> t.getTaskId().equals(task.getTaskId()))
                 .findFirst()
                 .orElseThrow();
 
