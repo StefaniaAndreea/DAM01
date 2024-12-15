@@ -6,9 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
+@Entity
 @Data
 @NoArgsConstructor
-@Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
 
@@ -20,7 +20,7 @@ public class Task {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = true) // Legătura către Employee
     private Employee assignedTo;
 
     @Enumerated(EnumType.STRING)
@@ -28,7 +28,7 @@ public class Task {
     private TaskStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false) // Legătura către Project
     private Project project;
 
     public enum TaskStatus {

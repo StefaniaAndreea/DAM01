@@ -50,6 +50,15 @@ public class Project {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
+    public void addTask(Task task) {
+        task.setProject(this);
+        tasks.add(task);
+    }
+
+    public void removeTask(Task task) {
+        task.setProject(null);
+        tasks.remove(task);
+    }
 
     public enum StatusProiect {
         ONGOING, COMPLETED, ARCHIVED

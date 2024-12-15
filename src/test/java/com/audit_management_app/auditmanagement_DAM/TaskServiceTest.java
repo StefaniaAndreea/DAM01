@@ -10,7 +10,10 @@ import com.audit_management_app.auditmanagement_DAM.domain.services.IEmployeeRep
 import com.audit_management_app.auditmanagement_DAM.domain.services.IProjectRepository;
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.AuditTeam;
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.Employee;
+
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,9 @@ public class TaskServiceTest {
 
     @Autowired
     private IEmployeeRepository employeeRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TaskServiceTest.class);
+
+
 
     @Test
     void testMarkAsDone() {
@@ -155,4 +161,61 @@ public class TaskServiceTest {
         assertNotNull(updatedTask.getAssignedTo(), "Task should have an assigned employee.");
         assertEquals(newEmployee.getEmployeeId(), updatedTask.getAssignedTo().getEmployeeId(), "Task should be assigned to the correct employee.");
     }
+    @Test
+    void testAssignEmployeeNotAvailable() {
+        logger.info(() -> "Starting test: testAssignEmployeeNotAvailable");
+
+        // Arrange: Creăm un angajat indisponibil
+        Employee unavailableEmployee = new Employee();
+        unavailableEmployee.setName("Jane Doe");
+        unavailableEmployee.setRole(Employee.EmployeeRole.AUDITOR);
+        unavailableEmployee.setAvailable(false);
+        unavailableEmployee = employeeRepository.save(unavailableEmployee);
+
+        // Creăm un client valid
+        Client client = new Client();
+        client.setName("CyberSecure Inc.");
+        client.setContactPerson("John Doe");
+        client.setContactEmail("john.doe@cybersecure.com");
+        client = clientRepository.save(client);
+
+
+        // Creăm o echipă validă
+        AuditTeam auditTeam = new AuditTeam();
+        auditTeam.setTeamName("Audit Team Alpha");
+        auditTeam = teamRepository.save(auditTeam);
+
+
+        // Creăm un proiect valid
+        Project project = new Project();
+        project.setName("Test Project");
+        project.setStatus(Project.StatusProiect.ONGOING);
+        project.setClient(client);
+        project.setTeam(auditTeam);
+        project = projectRepository.save(project);
+
+
+        // Creăm o sarcină asociată proiectului
+        Task task = new Task();
+        task.setDescription("Test Task");
+        task.setStatus(Task.TaskStatus.PENDING);
+        task.setProject(project);
+        project.getTasks().add(task);
+        project = projectRepository.save(project);
+
+        final Task savedTask = project.getTasks().get(0);
+        final Employee finalUnavailableEmployee = unavailableEmployee;
+
+        // Act & Assert
+        logger.info(() -> "Attempting to assign task " + savedTask.getTaskId() + " to unavailable employee " + finalUnavailableEmployee.getEmployeeId());
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            taskService.assignEmployee(savedTask.getTaskId(), finalUnavailableEmployee.getEmployeeId());
+        });
+
+        logger.info(() -> "Assignment failed as expected with message: " + exception.getMessage());
+        assertEquals("Employee is not available.", exception.getMessage());
+
+        logger.info(() -> "Test completed: testAssignEmployeeNotAvailable");
+    }
+
 }

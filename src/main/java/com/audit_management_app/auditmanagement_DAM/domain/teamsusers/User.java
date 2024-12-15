@@ -43,7 +43,19 @@ public class User {
     }
 
     public enum UserRole {
-        ADMINISTRATOR, MANAGER, PENTESTER
+        ADMINISTRATOR("Full Access"),
+        MANAGER("Manager Access"),
+        PENTESTER("Limited Access");
+
+        private final String permissions;
+
+        UserRole(String permissions) {
+            this.permissions = permissions;
+        }
+
+        public String getPermissions() {
+            return permissions;
+        }
     }
 
     public User(String username, String password, UserRole role, Employee employee) {
