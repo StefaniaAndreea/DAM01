@@ -21,7 +21,7 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private int projectId;
+    private Integer projectId;
 
     private String name;
 
