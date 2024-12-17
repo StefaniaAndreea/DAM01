@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/projects")
+@RequestMapping("/projects")
 public class ProjectControllerREST {
 
     private static final Logger logger = Logger.getLogger(ProjectControllerREST.class.getName());
