@@ -20,7 +20,7 @@ public class AuditReport implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private int reportId;
+    private Integer reportId;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
