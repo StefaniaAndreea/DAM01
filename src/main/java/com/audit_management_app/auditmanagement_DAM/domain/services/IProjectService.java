@@ -48,13 +48,9 @@ public interface IProjectService {
      */
     List<Project> findProjectsByStatus(Project.StatusProiect status);
 
-    /**
-     * Găsește proiecte asociate unui client.
-     *
-     * @param clientId ID-ul clientului asociat proiectelor.
-     * @return Lista proiectelor asociate clientului respectiv.
-     * @throws IllegalArgumentException Dacă clientul nu există.
-     */
+
     List<Project> findProjectsByClient(String clientName) throws IllegalArgumentException;
+
+    public List<Project> findAllProjects();
 }
 

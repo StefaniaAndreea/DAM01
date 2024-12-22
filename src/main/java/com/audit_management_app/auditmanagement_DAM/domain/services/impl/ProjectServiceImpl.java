@@ -49,7 +49,7 @@ public class ProjectServiceImpl implements IProjectService {
         existingProject.setStartDate(project.getStartDate());
         existingProject.setEndDate(project.getEndDate());
         existingProject.setProgress(project.getProgress());
-
+        existingProject.setStatus(project.getStatus());
         return projectRepository.save(existingProject);
     }
 
@@ -86,6 +86,12 @@ public class ProjectServiceImpl implements IProjectService {
             throw new IllegalArgumentException("Nu există proiecte asociate clientului cu numele: " + clientName);
         }
         return projects;
+    }
+
+    @Override
+    public List<Project> findAllProjects() {
+        // Returnează toate proiectele folosind repository-ul
+        return projectRepository.findAll();
     }
 
 }
