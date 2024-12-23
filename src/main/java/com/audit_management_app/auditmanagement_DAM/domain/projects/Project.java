@@ -42,7 +42,7 @@ public class Project implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusProject status;
+    private StatusProiect status;
 
     private float progress;
 
@@ -61,7 +61,7 @@ public class Project implements Serializable {
         tasks.remove(task);
     }
 
-    public enum StatusProject {
+    public enum StatusProiect {
         ONGOING, COMPLETED, ARCHIVED
     }
 }

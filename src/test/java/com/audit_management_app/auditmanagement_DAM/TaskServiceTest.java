@@ -61,7 +61,7 @@ public class TaskServiceTest {
         // Creăm angajatul pentru test
         Employee employee = new Employee();
         employee.setName("Default Employee");
-        employee.setRole(Employee.EmployeeRole.AUDITOR);
+        employee.setRole(Employee.EmployeeRole.PENTESTER);
         employee.setAvailable(true);
         employee = employeeRepository.save(employee);
 
@@ -115,7 +115,7 @@ public class TaskServiceTest {
         // Creăm angajatul pentru test
         Employee employee = new Employee();
         employee.setName("Default Employee");
-        employee.setRole(Employee.EmployeeRole.AUDITOR);
+        employee.setRole(Employee.EmployeeRole.PENTESTER);
         employee.setAvailable(true);
         employee = employeeRepository.save(employee);
 
@@ -168,7 +168,7 @@ public class TaskServiceTest {
         // Arrange: Creăm un angajat indisponibil
         Employee unavailableEmployee = new Employee();
         unavailableEmployee.setName("Jane Doe");
-        unavailableEmployee.setRole(Employee.EmployeeRole.AUDITOR);
+        unavailableEmployee.setRole(Employee.EmployeeRole.PENTESTER);
         unavailableEmployee.setAvailable(false);
         unavailableEmployee = employeeRepository.save(unavailableEmployee);
 

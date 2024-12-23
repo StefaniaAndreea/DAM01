@@ -26,9 +26,8 @@ public class AuditTeam implements Serializable {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Employee> members = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "assigned_project_id")
-    private Project assignedProject;
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Project> assignedProjects = new ArrayList<>();
 
     public AuditTeam(String teamName) {
         this.teamName = teamName;
@@ -44,7 +43,4 @@ public class AuditTeam implements Serializable {
         employee.setTeam(null);
     }
 
-    public void assignProject(Project project) {
-        this.assignedProject = project;
-    }
 }
