@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TestAppProjectServiceREST {
     private static Integer projectId; // Variabilă globală și statică
     private static Logger logger = Logger.getLogger(TestAppProjectServiceREST.class.getName());

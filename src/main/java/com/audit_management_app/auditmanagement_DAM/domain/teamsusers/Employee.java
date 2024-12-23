@@ -34,7 +34,6 @@ public class Employee implements Serializable {
     private boolean isAvailable;
 
     public enum EmployeeRole {
-        AUDITOR,
         PENTESTER,
         MANAGER
     }
