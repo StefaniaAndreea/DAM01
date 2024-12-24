@@ -1,6 +1,7 @@
 package com.audit_management_app.auditmanagement_DAM.domain.services;
 
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
+import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
 
 import java.util.List;
 
@@ -52,5 +53,6 @@ public interface IProjectService {
     List<Project> findProjectsByClient(String clientName) throws IllegalArgumentException;
 
     public List<Project> findAllProjects();
+
 }
 
