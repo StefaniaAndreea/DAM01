@@ -4,6 +4,8 @@ import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +23,7 @@ public interface ITaskRepository extends JpaRepository<Task, Integer> {
 
     // Găsirea task-urilor unui angajat după status
     List<Task> findByAssignedToAndStatus(Employee employee, Task.TaskStatus status);
+
+    @Query("SELECT COUNT(t) = 0 FROM Task t WHERE t.assignedTo.employeeId = :employeeId AND t.status != 'COMPLETED'")
+    boolean areAllTasksCompleted(@Param("employeeId") Integer employeeId);
 }

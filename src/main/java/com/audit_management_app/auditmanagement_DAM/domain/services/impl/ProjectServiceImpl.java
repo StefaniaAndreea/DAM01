@@ -62,12 +62,9 @@ public class ProjectServiceImpl implements IProjectService {
         existingProject.setEndDate(project.getEndDate());
         existingProject.setProgress(project.getProgress());
         existingProject.setStatus(project.getStatus());
+        // Actualizăm echipa doar dacă este permis conform conditiei specificate anterior
 
-        // Actualizăm echipa doar dacă este permis
-        if (!existingProject.getTeam().equals(project.getTeam())) {
-            existingProject.setTeam(project.getTeam());
-        }
-
+        existingProject.setTeam(project.getTeam());
         return projectRepository.save(existingProject);
     }
 
@@ -78,7 +75,6 @@ public class ProjectServiceImpl implements IProjectService {
         if (!projectRepository.existsById(projectId)) {
             throw new IllegalArgumentException("Project with ID " + projectId + " does not exist.");
         }
-
         // Ștergem proiectul
         projectRepository.deleteById(projectId);
     }

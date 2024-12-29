@@ -107,6 +107,13 @@ public class TaskRestServices {
                 .toList();
     }
 
+    @GetMapping("/all")
+    public List<TaskDTO> getAllTasks() {
+        return taskService.findAllTasks().stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     //GET http://localhost:8088/api/rest/app/tasks/employee/1/status/PENDING
 
     @DeleteMapping("/{taskId}")

@@ -33,7 +33,9 @@ public class TaskServiceImpl implements ITaskService {
         // Verificăm dacă proiectul există
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("Project with ID " + projectId + " does not exist."));
-
+        if (project.getStatus() == Project.StatusProiect.ARCHIVED) {
+            throw new IllegalArgumentException("Cannot add tasks to an archived project.");
+        }
         // Verificăm dacă angajatul există (dacă este specificat)
         if (task.getAssignedTo() != null) {
             Integer assignedToId = task.getAssignedTo().getEmployeeId();
@@ -62,17 +64,44 @@ public class TaskServiceImpl implements ITaskService {
         // Salvăm task-ul în baza de date
         return taskRepository.save(task);
     }
+
     @Override
     @Transactional
     public void markAsDone(int taskId) {
-        // Găsim task-ul
         Task task = findTaskById(taskId);
 
-        // Setăm statusul ca COMPLETED
         task.setStatus(Task.TaskStatus.COMPLETED);
-
-        // Salvăm task-ul actualizat
         taskRepository.save(task);
+
+        // Verificăm statusul angajatului
+        checkAndSetEmployeeAvailability(task);
+
+        // Verificăm statusul proiectului
+        checkAndSetProjectCompletion(task);
+    }
+
+    private void checkAndSetEmployeeAvailability(Task task) {
+        if (task.getAssignedTo() != null) {
+            Integer employeeId = task.getAssignedTo().getEmployeeId();
+            boolean areAllEmployeeTasksCompleted = taskRepository.areAllTasksCompleted(employeeId);
+
+            if (areAllEmployeeTasksCompleted) {
+                Employee employee = task.getAssignedTo();
+                employee.setAvailable(true);
+                employeeRepository.save(employee);
+            }
+        }
+    }
+
+    private void checkAndSetProjectCompletion(Task task) {
+        Project project = task.getProject();
+        boolean areAllProjectTasksCompleted = project.getTasks().stream()
+                .allMatch(t -> t.getStatus() == Task.TaskStatus.COMPLETED);
+
+        if (areAllProjectTasksCompleted) {
+            project.setStatus(Project.StatusProiect.COMPLETED);
+            projectRepository.save(project);
+        }
     }
 
     @Override
@@ -130,6 +159,7 @@ public class TaskServiceImpl implements ITaskService {
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with ID: " + taskId));
     }
+
     @Override
     @Transactional
     public List<Task> findTasksByStatus(Task.TaskStatus status) {
@@ -158,5 +188,11 @@ public class TaskServiceImpl implements ITaskService {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + employeeId));
         return taskRepository.findByAssignedToAndStatus(employee, status);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Task> findAllTasks() {
+        return taskRepository.findAll();
     }
 }

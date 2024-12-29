@@ -1,6 +1,7 @@
 package com.audit_management_app.auditmanagement_DAM.domain.services;
 
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface ITaskService {
     List<Task> findTasksByEmployeeAndStatus(int employeeId, Task.TaskStatus status);
     Task updateTask(Integer taskId, Task task);
     void deleteTask(Integer taskId);
+    List<Task> findAllTasks();
 }
