@@ -35,7 +35,7 @@ public class AuditReport implements Serializable {
     @JoinColumn(name = "author_id", nullable = false)
     private Employee author;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     private List<Vulnerability> vulnerabilities = new ArrayList<>();
 
     public void submitReport(String filePath, Employee author) {
