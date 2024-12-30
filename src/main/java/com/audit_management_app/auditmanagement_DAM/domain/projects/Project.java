@@ -31,7 +31,7 @@ public class Project implements Serializable {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = true)
     private AuditTeam team;
 
     @Temporal(TemporalType.DATE)

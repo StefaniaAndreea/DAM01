@@ -24,6 +24,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public Employee addEmployee(Employee employee) {
         employee.setAvailable(true); // Angajații noi sunt disponibili implicit
+        // Dacă angajatul are o echipă specificată, îl adăugăm în lista members
+        if (employee.getTeam() != null) {
+            AuditTeam team = auditTeamRepository.findById(employee.getTeam().getTeamId())
+                    .orElseThrow(() -> new IllegalArgumentException("Team not found with ID: " + employee.getTeam().getTeamId()));
+            team.getMembers().add(employee);
+        }
         return employeeRepository.save(employee);
     }
     @Override
@@ -42,17 +48,28 @@ public class EmployeeServiceImpl implements IEmployeeService {
         if (updatedEmployee.getTeam() != null) {
             // Dacă o echipă este specificată, asociem echipa nouă
             Integer teamId = updatedEmployee.getTeam().getTeamId();
-            AuditTeam team = auditTeamRepository.findById(teamId)
+            AuditTeam newTeam = auditTeamRepository.findById(teamId)
                     .orElseThrow(() -> new IllegalArgumentException("Team with ID " + teamId + " not found."));
-            existingEmployee.setTeam(team);
+
+            // Dacă angajatul are deja o echipă, îl eliminăm din lista acelei echipe
+            if (existingEmployee.getTeam() != null && !existingEmployee.getTeam().equals(newTeam)) {
+                existingEmployee.getTeam().getMembers().remove(existingEmployee);
+            }
+
+            // Adăugăm angajatul în noua echipă
+            newTeam.getMembers().add(existingEmployee);
+            existingEmployee.setTeam(newTeam);
         } else if (updatedEmployee.getTeam() == null && existingEmployee.getTeam() != null) {
-            // Dacă nu specificăm echipa și angajatul are deja una, menținem echipa existentă
-            // Nu facem nimic, echipa rămâne neschimbată
+            // Dacă nu specificăm echipa și angajatul are deja una, îl eliminăm din lista acelei echipe
+            existingEmployee.getTeam().getMembers().remove(existingEmployee);
+            existingEmployee.setTeam(null); // Resetăm echipa
         }
 
         // Salvăm modificările
         return employeeRepository.save(existingEmployee);
     }
+
+
 
     @Override
     public void deleteEmployee(Integer employeeId) {
@@ -60,6 +77,11 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + employeeId));
         if (!employee.isAvailable()) {
             throw new IllegalArgumentException("Cannot delete an employee who is currently assigned to a project/task.");
+        }
+
+        // Eliminăm angajatul din echipa sa, dacă există
+        if (employee.getTeam() != null) {
+            employee.getTeam().getMembers().remove(employee);
         }
         employeeRepository.delete(employee);
     }

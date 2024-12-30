@@ -46,6 +46,8 @@ public class TaskServiceImpl implements ITaskService {
 
         // Asociem task-ul cu proiectul
         task.setProject(project);
+        // Adăugăm task-ul în lista proiectului
+        project.getTasks().add(task);
 
         // Salvăm task-ul
         return taskRepository.save(task);
@@ -60,6 +62,8 @@ public class TaskServiceImpl implements ITaskService {
 
         // Asociem task-ul cu proiectul
         task.setProject(project);
+        // Adăugăm task-ul în lista proiectului
+        project.getTasks().add(task);
 
         // Salvăm task-ul în baza de date
         return taskRepository.save(task);
@@ -133,6 +137,10 @@ public class TaskServiceImpl implements ITaskService {
         // Verificăm dacă task-ul există
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found with ID: " + taskId));
+        // Obținem proiectul asociat
+        Project project = task.getProject();
+        // Eliminăm task-ul din lista proiectului
+        project.getTasks().remove(task);
         // Ștergem task-ul
         taskRepository.delete(task);
     }
@@ -148,12 +156,23 @@ public class TaskServiceImpl implements ITaskService {
         existingTask.setDescription(updatedTask.getDescription());
         existingTask.setStatus(updatedTask.getStatus());
         if (updatedTask.getAssignedTo() != null) {
-            existingTask.setAssignedTo(updatedTask.getAssignedTo());
+            Employee newEmployee = employeeRepository.findById(updatedTask.getAssignedTo().getEmployeeId())
+                    .orElseThrow(() -> new IllegalArgumentException("Employee not found."));
+            if (!newEmployee.isAvailable()) {
+                throw new IllegalArgumentException("Employee is not available.");
+            }
+            existingTask.setAssignedTo(newEmployee);
         }
 
         // Salvăm task-ul actualizat
-        return taskRepository.save(existingTask);
+        Task savedTask = taskRepository.save(existingTask);
+
+
+        logger.info("Task with ID {} has been updated successfully.", taskId);
+
+        return savedTask;
     }
+
 
     private Task findTaskById(int taskId) {
         return taskRepository.findById(taskId)

@@ -2,7 +2,6 @@ package com.audit_management_app.auditmanagement_DAM.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import java.util.List;
 
 @Data

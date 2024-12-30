@@ -1,11 +1,14 @@
 package com.audit_management_app.auditmanagement_DAM.domain.teamsusers;
 
+import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +26,9 @@ public class Employee implements Serializable {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = true)
     private AuditTeam team;
+
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

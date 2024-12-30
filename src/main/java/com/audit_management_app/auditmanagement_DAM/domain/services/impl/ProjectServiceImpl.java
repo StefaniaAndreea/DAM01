@@ -1,11 +1,13 @@
 package com.audit_management_app.auditmanagement_DAM.domain.services.impl;
 
+import com.audit_management_app.auditmanagement_DAM.domain.projects.Client;
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
 import com.audit_management_app.auditmanagement_DAM.domain.services.IProjectRepository;
 import com.audit_management_app.auditmanagement_DAM.domain.services.IClientRepository;
 import com.audit_management_app.auditmanagement_DAM.domain.services.IAuditTeamRepository;
 import com.audit_management_app.auditmanagement_DAM.domain.services.IProjectService;
+import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.AuditTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +39,18 @@ public class ProjectServiceImpl implements IProjectService {
         }
 
         // Salvăm proiectul
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        // Adăugăm proiectul în lista echipei
+        AuditTeam team = savedProject.getTeam();
+        team.getAssignedProjects().add(savedProject);
+        teamRepository.save(team);
+
+        // Adăugăm proiectul în lista clientului
+        Client client=savedProject.getClient();
+        client.getProjects().add(savedProject);
+        clientRepository.save(client);
+
+        return savedProject;
     }
 
     @Override
@@ -51,11 +64,6 @@ public class ProjectServiceImpl implements IProjectService {
             throw new IllegalArgumentException("Archived projects cannot be modified.");
         }
 
-        // Verificăm dacă echipa poate fi modificată (doar înainte de startDate)
-        if (!existingProject.getTeam().equals(project.getTeam()) && existingProject.getStartDate().before(new Date())) {
-            throw new IllegalArgumentException("The project team cannot be changed after the project start date.");
-        }
-
         // Actualizăm câmpurile proiectului
         existingProject.setName(project.getName());
         existingProject.setStartDate(project.getStartDate());
@@ -63,18 +71,49 @@ public class ProjectServiceImpl implements IProjectService {
         existingProject.setProgress(project.getProgress());
         existingProject.setStatus(project.getStatus());
         // Actualizăm echipa doar dacă este permis conform conditiei specificate anterior
+        // Gestionăm schimbarea echipei
+        if (!existingProject.getTeam().equals(project.getTeam())) {
+            AuditTeam oldTeam = existingProject.getTeam();
+            AuditTeam newTeam = project.getTeam();
 
-        existingProject.setTeam(project.getTeam());
-        return projectRepository.save(existingProject);
+            // Eliminăm proiectul din lista echipei vechi
+            if (oldTeam != null) {
+                oldTeam.getAssignedProjects().remove(existingProject);
+                teamRepository.save(oldTeam);
+            }
+
+            // Adăugăm proiectul în lista echipei noi
+            if (newTeam != null) {
+                newTeam.getAssignedProjects().add(existingProject);
+                teamRepository.save(newTeam);
+            }
+
+            // Actualizăm echipa proiectului
+            existingProject.setTeam(newTeam);
+        }        return projectRepository.save(existingProject);
     }
 
 
     @Override
     public void deleteProject(int projectId) throws IllegalArgumentException {
         // Verificăm dacă proiectul există
-        if (!projectRepository.existsById(projectId)) {
-            throw new IllegalArgumentException("Project with ID " + projectId + " does not exist.");
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new IllegalArgumentException("Project with ID " + projectId + " does not exist."));
+
+        // Eliminăm proiectul din lista echipei
+        AuditTeam team = project.getTeam();
+        if (team != null) {
+            team.getAssignedProjects().remove(project);
+            teamRepository.save(team);
         }
+
+        //Eliminam proiectul din lista clientului
+        Client client = project.getClient();
+        if (client !=null){
+            client.getProjects().remove(project);
+            clientRepository.save(client);
+        }
+
         // Ștergem proiectul
         projectRepository.deleteById(projectId);
     }
