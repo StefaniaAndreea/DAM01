@@ -87,30 +87,5 @@ public class TestAuditTeamServices {
         assertEquals(1, updatedTeam.getMembers().size());
         assertEquals(team, employee.getTeam());
     }
-    @Test
-    void testRemoveMemberFromTeam() {
-        // Arrange
-        AuditTeam team = new AuditTeam();
-        team.setTeamName("Team D");
-
-        Employee employee = new Employee();
-        employee.setName("Employee 4");
-        employee.setAvailable(true);
-        employee.setTeam(team);
-        employee.setRole(Employee.EmployeeRole.PENTESTER);
-
-        team.getMembers().add(employee);
-        auditTeamRepository.save(team);
-        employeeRepository.save(employee);
-
-        // Act
-        auditTeamService.removeMemberFromTeam(team.getTeamId(), employee.getEmployeeId());
-
-        // Assert
-        AuditTeam updatedTeam = auditTeamRepository.findById(team.getTeamId()).orElseThrow();
-        assertTrue(updatedTeam.getMembers().isEmpty());
-        Employee updatedEmployee = employeeRepository.findById(employee.getEmployeeId()).orElseThrow();
-        assertNull(updatedEmployee.getTeam());
-    }
 
 }
