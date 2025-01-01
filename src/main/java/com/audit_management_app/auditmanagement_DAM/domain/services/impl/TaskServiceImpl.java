@@ -41,6 +41,7 @@ public class TaskServiceImpl implements ITaskService {
             Integer assignedToId = task.getAssignedTo().getEmployeeId();
             Employee employee = employeeRepository.findById(assignedToId)
                     .orElseThrow(() -> new IllegalArgumentException("Employee with ID " + assignedToId + " does not exist."));
+
             task.setAssignedTo(employee);
         }
 

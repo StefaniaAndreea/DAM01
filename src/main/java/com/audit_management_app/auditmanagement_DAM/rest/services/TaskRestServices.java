@@ -106,7 +106,7 @@ public class TaskRestServices {
                 .map(this::convertToDTO)
                 .toList();
     }
-
+    //GET http://localhost:8088/api/rest/app/tasks/employee/1/status/PENDING
     @GetMapping("/all")
     public List<TaskDTO> getAllTasks() {
         return taskService.findAllTasks().stream()
@@ -114,7 +114,7 @@ public class TaskRestServices {
                 .toList();
     }
 
-    //GET http://localhost:8088/api/rest/app/tasks/employee/1/status/PENDING
+    //GET http://localhost:8088/api/rest/app/tasks/all
 
     @DeleteMapping("/{taskId}")
     public String deleteTask(@PathVariable Integer taskId) {

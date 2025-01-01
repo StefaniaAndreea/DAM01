@@ -48,7 +48,7 @@ public class EmployeeRestServices {
 //        "role": "PENTESTER",
 //        "salary": 7500.0,
 //        "available": true,
-//        "team":1
+//        "teamId":1
 //}
 
 

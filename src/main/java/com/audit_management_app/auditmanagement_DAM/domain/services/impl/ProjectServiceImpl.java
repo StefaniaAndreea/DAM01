@@ -1,15 +1,11 @@
 package com.audit_management_app.auditmanagement_DAM.domain.services.impl;
 
-import com.audit_management_app.auditmanagement_DAM.domain.projects.Client;
-import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
-import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
-import com.audit_management_app.auditmanagement_DAM.domain.services.IProjectRepository;
-import com.audit_management_app.auditmanagement_DAM.domain.services.IClientRepository;
-import com.audit_management_app.auditmanagement_DAM.domain.services.IAuditTeamRepository;
-import com.audit_management_app.auditmanagement_DAM.domain.services.IProjectService;
+import com.audit_management_app.auditmanagement_DAM.domain.projects.*;
+import com.audit_management_app.auditmanagement_DAM.domain.services.*;
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.AuditTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -26,28 +22,36 @@ public class ProjectServiceImpl implements IProjectService {
     @Autowired
     private IAuditTeamRepository teamRepository;
 
+    @Autowired
+    private IVulnerabilityRepository vulnerabilityRepository;
+
+    @Transactional
     @Override
     public Project addProject(Project project) throws IllegalArgumentException {
         // Verificăm dacă clientul există
-        if (!clientRepository.existsById(project.getClient().getClientId())) {
-            throw new IllegalArgumentException("Client with ID " + project.getClient().getClientId() + " does not exist.");
-        }
+        Client client = clientRepository.findById(project.getClient().getClientId())
+                .orElseThrow(() -> new IllegalArgumentException("Client with ID " + project.getClient().getClientId() + " does not exist."));
 
         // Verificăm dacă echipa există
-        if (!teamRepository.existsById(project.getTeam().getTeamId())) {
-            throw new IllegalArgumentException("Audit team with ID " + project.getTeam().getTeamId() + " does not exist.");
+        AuditTeam team = teamRepository.findById(project.getTeam().getTeamId())
+                .orElseThrow(() -> new IllegalArgumentException("Audit team with ID " + project.getTeam().getTeamId() + " does not exist."));
+
+        // Verificăm dacă echipa este deja asignată unui alt proiect în același interval
+        boolean isAssigned = projectRepository.isTeamAssignedToAnotherProject(
+                team.getTeamId(), project.getStartDate(), project.getEndDate());
+
+        if (isAssigned) {
+            throw new IllegalArgumentException("Team is already assigned to another project during this period.");
         }
 
         // Salvăm proiectul
         Project savedProject = projectRepository.save(project);
-        // Adăugăm proiectul în lista echipei
-        AuditTeam team = savedProject.getTeam();
-        team.getAssignedProjects().add(savedProject);
-        teamRepository.save(team);
 
-        // Adăugăm proiectul în lista clientului
-        Client client=savedProject.getClient();
+        // Actualizăm listele echipei și clientului
+        team.getAssignedProjects().add(savedProject);
         client.getProjects().add(savedProject);
+
+        teamRepository.save(team);
         clientRepository.save(client);
 
         return savedProject;
@@ -70,28 +74,42 @@ public class ProjectServiceImpl implements IProjectService {
         existingProject.setEndDate(project.getEndDate());
         existingProject.setProgress(project.getProgress());
         existingProject.setStatus(project.getStatus());
-        // Actualizăm echipa doar dacă este permis conform conditiei specificate anterior
+
         // Gestionăm schimbarea echipei
-        if (!existingProject.getTeam().equals(project.getTeam())) {
-            AuditTeam oldTeam = existingProject.getTeam();
-            AuditTeam newTeam = project.getTeam();
+        AuditTeam oldTeam = existingProject.getTeam();
+        AuditTeam newTeam = project.getTeam();
 
-            // Eliminăm proiectul din lista echipei vechi
-            if (oldTeam != null) {
-                oldTeam.getAssignedProjects().remove(existingProject);
-                teamRepository.save(oldTeam);
+        if (newTeam != null) {
+            // Verificăm dacă echipa este deja asignată la alt proiect în același interval de timp
+            boolean isAssigned = projectRepository.isTeamAssignedToAnotherProject(
+                    newTeam.getTeamId(), project.getStartDate(), project.getEndDate());
+
+            if (isAssigned) {
+                throw new IllegalArgumentException("The specified team is already assigned to another project in the same time period.");
             }
+        }
 
-            // Adăugăm proiectul în lista echipei noi
+        if (oldTeam == null && newTeam != null) {
+            // Cazul în care proiectul nu avea echipă, dar se setează una nouă
+            newTeam.getAssignedProjects().add(existingProject);
+            teamRepository.save(newTeam);
+        } else if (oldTeam != null && !oldTeam.equals(newTeam)) {
+            // Cazul în care echipa se schimbă
+            oldTeam.getAssignedProjects().remove(existingProject);
+            teamRepository.save(oldTeam);
+
             if (newTeam != null) {
                 newTeam.getAssignedProjects().add(existingProject);
                 teamRepository.save(newTeam);
             }
+        }
 
-            // Actualizăm echipa proiectului
-            existingProject.setTeam(newTeam);
-        }        return projectRepository.save(existingProject);
+        // Actualizăm echipa proiectului
+        existingProject.setTeam(newTeam);
+
+        return projectRepository.save(existingProject);
     }
+
 
 
     @Override
@@ -113,7 +131,11 @@ public class ProjectServiceImpl implements IProjectService {
             client.getProjects().remove(project);
             clientRepository.save(client);
         }
-
+// Ștergem toate vulnerabilitățile asociate rapoartelor proiectului
+        for (AuditReport report : project.getReports()) {
+            List<Vulnerability> vulnerabilities = report.getVulnerabilities();
+            vulnerabilityRepository.deleteAll(vulnerabilities); // Ștergem vulnerabilitățile
+        }
         // Ștergem proiectul
         projectRepository.deleteById(projectId);
     }

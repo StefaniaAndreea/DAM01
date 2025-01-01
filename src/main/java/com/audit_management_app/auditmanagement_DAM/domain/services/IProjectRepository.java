@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,12 @@ public interface IProjectRepository extends JpaRepository<Project, Integer> {
     // Găsește proiecte asociate unui client, folosind JOIN FETCH pentru a evita problema N+1
     @Query("SELECT p FROM Project p JOIN FETCH p.client c WHERE c.name LIKE %:clientName%")
     List<Project> findProjectsByClientName(@Param("clientName") String clientName);
-
+    @Query("SELECT COUNT(p) > 0 FROM Project p WHERE p.team.teamId = :teamId AND " +
+            "((:startDate BETWEEN p.startDate AND p.endDate) OR " +
+            "(:endDate BETWEEN p.startDate AND p.endDate) OR " +
+            "(p.startDate BETWEEN :startDate AND :endDate))")
+    boolean isTeamAssignedToAnotherProject(@Param("teamId") Integer teamId,
+                                           @Param("startDate") Date startDate,
+                                           @Param("endDate") Date endDate);
 
 }

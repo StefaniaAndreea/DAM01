@@ -25,6 +25,8 @@ public class ProjectRestServices {
     public ProjectRestServices(IProjectService projectService) {
         this.projectService = projectService;
     }
+
+
     @GetMapping
     public List<ProjectDTO> getAllProjects() {
         logger.info("Fetching all projects...");
@@ -34,6 +36,9 @@ public class ProjectRestServices {
                 .map(this::convertToDTO)        // Convertește fiecare entitate Project în DTO
                 .collect(Collectors.toList()); // Returnează lista de DTO-uri
     }
+    // GET http://localhost:8088/api/rest/app/project
+
+
     // POST: Adaugă un proiect nou
     @PostMapping
     @ResponseBody
@@ -43,6 +48,16 @@ public class ProjectRestServices {
         Project savedProject = projectService.addProject(project);
         return convertToDTO(savedProject);
     }
+    //post http://localhost:8088/api/rest/app/project
+//     {
+//        "name": "Test Project 2",
+//        "clientId": 1,
+//        "teamId": 1,
+//        "startDate": "2024-12-21T22:44:05.453+00:00",
+//        "endDate": "2024-12-22T22:44:05.453+00:00",
+//        "status": "ONGOING",
+//        "progress": 15.0
+//    }
 
     // PUT: Actualizează un proiect existent
     @PutMapping
@@ -59,6 +74,19 @@ public class ProjectRestServices {
 
         return convertToDTO(updatedProject);
     }
+    // put http://localhost:8088/api/rest/app/project
+    //{
+    //  "projectId": 2,
+    //  "name": "Updated Test Project",
+    //  "clientId": 1,
+    //  "teamId": 1,
+    //  "startDate": "2024-12-21T12:00:00",
+    //  "endDate": "2024-12-22T12:00:00",
+    //  "status": "COMPLETED",
+    //  "progress": 37.0
+    //}
+
+
 
     // DELETE: Șterge un proiect după ID
     @DeleteMapping("/{id}")
@@ -68,6 +96,7 @@ public class ProjectRestServices {
         projectService.deleteProject(id);
         return "Project with ID " + id + " has been deleted.";
     }
+    // DELETE  http://localhost:8088/api/rest/app/project/{id}
 
     // PUT: Arhivează un proiect
     @PutMapping("/{id}/archive")
@@ -77,6 +106,7 @@ public class ProjectRestServices {
         projectService.archiveProject(id);
         return "Project with ID " + id + " has been archived.";
     }
+    //http://localhost:8088/api/rest/app/project/1/archive
 
     // GET: Găsește proiecte după status
     @GetMapping("/status/{status}")
@@ -88,6 +118,7 @@ public class ProjectRestServices {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    // GET http://localhost:8088/api/rest/app/project/status/ONGOING
 
     // GET: Găsește proiecte după client
     @GetMapping("/client/{clientName}")
@@ -99,6 +130,7 @@ public class ProjectRestServices {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+    // http://localhost:8088/api/rest/app/project/client/Client Test
 
     // Metode auxiliare pentru conversia între DTO și Entitate
     private ProjectDTO convertToDTO(Project project) {
