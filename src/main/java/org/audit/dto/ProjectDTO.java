@@ -16,7 +16,7 @@ public class ProjectDTO {
     private String teamName;
     private Date startDate;
     private Date endDate;
-    private String status; // "ONGOING", "COMPLETED", "ARCHIVED"
+    private StatusProiect status;
     private float progress;
     private List<String> reportTitles; // Lista de titluri ale rapoartelor
     private List<String> taskNames; // Lista de nume ale task-urilor
@@ -85,11 +85,11 @@ public class ProjectDTO {
         this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public StatusProiect getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusProiect status) {
         this.status = status;
     }
 
