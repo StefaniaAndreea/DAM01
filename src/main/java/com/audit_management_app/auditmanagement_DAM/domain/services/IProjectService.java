@@ -54,5 +54,6 @@ public interface IProjectService {
 
     public List<Project> findAllProjects();
 
+    Project findProjectById(Integer id);
 }
 

@@ -75,41 +75,32 @@ public class ProjectServiceImpl implements IProjectService {
         existingProject.setProgress(project.getProgress());
         existingProject.setStatus(project.getStatus());
 
-        // Gestionăm schimbarea echipei
-        AuditTeam oldTeam = existingProject.getTeam();
-        AuditTeam newTeam = project.getTeam();
+        // Gestionăm schimbarea echipei doar dacă echipa a fost modificată
+        if (project.getTeam() != null && !project.getTeam().equals(existingProject.getTeam())) {
+            AuditTeam newTeam = project.getTeam();
 
-        if (newTeam != null) {
-            // Verificăm dacă echipa este deja asignată la alt proiect în același interval de timp
+            // Verificăm dacă echipa este deja asignată la alt proiect
             boolean isAssigned = projectRepository.isTeamAssignedToAnotherProject(
                     newTeam.getTeamId(), project.getStartDate(), project.getEndDate());
 
             if (isAssigned) {
                 throw new IllegalArgumentException("The specified team is already assigned to another project in the same time period.");
             }
-        }
 
-        if (oldTeam == null && newTeam != null) {
-            // Cazul în care proiectul nu avea echipă, dar se setează una nouă
+            // Actualizăm relația cu echipele
+            if (existingProject.getTeam() != null) {
+                existingProject.getTeam().getAssignedProjects().remove(existingProject);
+                teamRepository.save(existingProject.getTeam());
+            }
+
             newTeam.getAssignedProjects().add(existingProject);
             teamRepository.save(newTeam);
-        } else if (oldTeam != null && !oldTeam.equals(newTeam)) {
-            // Cazul în care echipa se schimbă
-            oldTeam.getAssignedProjects().remove(existingProject);
-            teamRepository.save(oldTeam);
 
-            if (newTeam != null) {
-                newTeam.getAssignedProjects().add(existingProject);
-                teamRepository.save(newTeam);
-            }
+            existingProject.setTeam(newTeam);
         }
-
-        // Actualizăm echipa proiectului
-        existingProject.setTeam(newTeam);
 
         return projectRepository.save(existingProject);
     }
-
 
 
     @Override
@@ -170,5 +161,9 @@ public class ProjectServiceImpl implements IProjectService {
         return projectRepository.findAll();
     }
 
-
+    @Override
+    public Project findProjectById(Integer id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Project with ID " + id + " not found"));
+    }
 }

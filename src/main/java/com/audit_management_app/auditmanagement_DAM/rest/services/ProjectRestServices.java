@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:3000") // Permite cereri din frontend
 @RestController
 @RequestMapping("/rest/app/project")
 @Transactional
@@ -132,6 +133,16 @@ public class ProjectRestServices {
     }
     // http://localhost:8088/api/rest/app/project/client/Client Test
 
+    @GetMapping("/{id}")
+    public ProjectDTO getProjectById(@PathVariable Integer id) {
+        logger.info("Fetching project with ID: " + id);
+
+        // Folosește metoda serviciului pentru a obține proiectul
+        Project project = projectService.findProjectById(id);
+
+        // Convertește entitatea Project în DTO și returnează
+        return convertToDTO(project);
+    }
     // Metode auxiliare pentru conversia între DTO și Entitate
     private ProjectDTO convertToDTO(Project project) {
         ProjectDTO dto = new ProjectDTO();
@@ -167,4 +178,5 @@ public class ProjectRestServices {
 
         return project;
     }
+
 }
