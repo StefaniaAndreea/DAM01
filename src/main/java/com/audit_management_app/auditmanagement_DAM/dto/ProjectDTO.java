@@ -19,7 +19,10 @@ public class ProjectDTO {
     @NotNull
     private String name;
 
-    private Integer clientId;  // ID-ul clientului asociat proiectului
+    private Integer clientId;
+
+    private String clientName;
+    private String teamName;// ID-ul clientului asociat proiectului
 
     private Integer teamId;    // ID-ul echipei asociate proiectului
 

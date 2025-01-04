@@ -149,7 +149,9 @@ public class ProjectRestServices {
         dto.setProjectId(project.getProjectId());
         dto.setName(project.getName());
         dto.setClientId(project.getClient() != null ? project.getClient().getClientId() : null);
+        dto.setClientName(project.getClient().getName()); // Preia numele clientulu
         dto.setTeamId(project.getTeam() != null ? project.getTeam().getTeamId() : null);
+        dto.setTeamName(project.getTeam().getTeamName());
         dto.setStartDate(project.getStartDate());
         dto.setEndDate(project.getEndDate());
         dto.setStatus(project.getStatus().name());
