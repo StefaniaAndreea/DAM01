@@ -11,12 +11,14 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.*;
+import org.audit.dto.AuditTeamDTO;
 import org.audit.dto.ClientDTO;
 import org.audit.dto.ProjectDTO;
 import org.audit.dto.StatusProiect;
 import org.audit.services.DateUtilAPI;
+import org.audit.services.IAuditTeamService;
 import org.audit.services.IClientService;
-import org.audit.services.ProjectService;
+import org.audit.services.IProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -25,8 +27,9 @@ import com.vaadin.flow.data.binder.Binder;
 @Route(value = "project-form")
 public class FormProjectView extends VerticalLayout implements HasUrlParameter<Integer> {
 
-    private final ProjectService projectService;
+    private final IProjectService projectService;
     private final IClientService clientService;
+    private final IAuditTeamService auditTeamService;
     private final Binder<ProjectDTO> binder = new BeanValidationBinder<>(ProjectDTO.class);
 
     private ProjectDTO project;
@@ -35,25 +38,25 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
 
     // Fields for ProjectDTO properties
     private final TextField nameField = new TextField("Project Name");
+    private final ComboBox<StatusProiect> statusField = new ComboBox<>("Status"); // Dropdown pentru Status
     private final ComboBox<ClientDTO> clientIdField = new ComboBox<>("Client ID"); // Dropdown pentru clienți
     private final TextField clientNameField = new TextField("Client Name");
-    private final IntegerField teamIdField = new IntegerField("Team ID");
+    private final ComboBox<AuditTeamDTO> teamIdField = new ComboBox<>("Team");
     private final TextField teamNameField = new TextField("Team Name");
     private final DatePicker startDateField = new DatePicker("Start Date");
     private final DatePicker endDateField = new DatePicker("End Date");
-    private final ComboBox<StatusProiect> statusField = new ComboBox<>("Status"); // Dropdown pentru Status
     private final TextField progressField = new TextField("Progress (%)");
 
     private final Button saveButton = new Button("Save");
     private final Button cancelButton = new Button("Cancel");
 
     @Autowired
-    public FormProjectView(ProjectService projectService, IClientService clientService) {
+    public FormProjectView(IProjectService projectService, IClientService clientService, IAuditTeamService auditTeamService) {
         this.projectService = projectService;
         this.clientService = clientService;
+        this.auditTeamService = auditTeamService;
         initializeView();
     }
-
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter Integer id) {
         if (id != null) {
@@ -82,6 +85,20 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
                 clientNameField.clear();
             }
         });
+        teamIdField.setItems(auditTeamService.getAllTeams()); // Populează ComboBox-ul cu echipe
+        teamIdField.setItemLabelGenerator(team -> String.valueOf(team.getTeamId())); // Afișează doar ID-ul echipei
+        teamIdField.setPlaceholder("Select a team");
+        teamIdField.setClearButtonVisible(true); // Permite ștergerea selecției
+        teamIdField.addValueChangeListener(event -> {
+            AuditTeamDTO selectedTeam = event.getValue();
+            if (selectedTeam != null) {
+                project.setTeamId(selectedTeam.getTeamId());
+                teamNameField.setValue(selectedTeam.getTeamName());
+            } else {
+                project.setTeamId(null);
+                teamNameField.clear();
+            }
+        });
 
         // Configurare ComboBox pentru Status
         statusField.setItems(StatusProiect.values()); // Populează dropdown-ul cu valorile din enum
@@ -104,8 +121,26 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
                             }
                         }
                 );
-        binder.forField(teamIdField).bind(ProjectDTO::getTeamId, ProjectDTO::setTeamId);
-        binder.forField(teamNameField).bind(ProjectDTO::getTeamName, ProjectDTO::setTeamName);
+        binder.forField(clientNameField).bind(ProjectDTO::getClientName, null);
+        binder.forField(teamIdField)
+                .withNullRepresentation(null)
+                .bind(
+                        project -> auditTeamService.getAllTeams().stream()
+                                .filter(team -> team.getTeamId().equals(project.getTeamId()))
+                                .findFirst()
+                                .orElse(null),
+                        (project, team) -> {
+                            if (team != null) {
+                                project.setTeamId(team.getTeamId());
+                                project.setTeamName(team.getTeamName());
+                            } else {
+                                project.setTeamId(null);
+                                project.setTeamName(null);
+                            }
+                        }
+                );
+
+        binder.forField(teamNameField).bind(ProjectDTO::getTeamName, null);
         binder.forField(startDateField)
                 .withConverter(
                         localDate -> localDate == null ? null : DateUtilAPI.asDate(localDate),
@@ -128,8 +163,8 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
 
         // Form layout
         FormLayout formLayout = new FormLayout(
-                nameField, clientIdField, clientNameField, teamIdField, teamNameField,
-                startDateField, endDateField, statusField, progressField
+                nameField, statusField, clientIdField, clientNameField, teamIdField, teamNameField,
+                startDateField, endDateField, progressField
         );
 
         // Buttons layout
