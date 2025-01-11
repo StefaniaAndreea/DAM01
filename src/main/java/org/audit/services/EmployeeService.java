@@ -187,6 +187,15 @@ public class EmployeeService implements IEmployeeService {
 
         return List.of(employees);
     }
+    @Override
+    public void updateEmployeeAvailability(Integer employeeId, boolean isAvailable) {
+        String url = backendUrl + "/" + employeeId + "/availability/" + isAvailable;
+
+        HttpHeaders headers = generateHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        restTemplate.exchange(url, HttpMethod.PUT, entity, Void.class);
+    }
 
     private HttpHeaders generateHeaders() {
         HttpHeaders headers = new HttpHeaders();

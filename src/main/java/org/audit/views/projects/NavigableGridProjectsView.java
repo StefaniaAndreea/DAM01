@@ -11,6 +11,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import org.audit.dto.ProjectDTO;
 import org.audit.services.ProjectService;
+import org.audit.views.clients.ClientDetailsView;
+import org.audit.views.reports.ReportsView;
+import org.audit.views.teams.TeamDetailsView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
@@ -53,7 +56,31 @@ public class NavigableGridProjectsView extends VerticalLayout {
         grid.addColumn(project -> formatDate(project.getEndDate())).setHeader("End Date");
         grid.addColumn(ProjectDTO::getStatus).setHeader("Status");
         grid.addColumn(project -> project.getProgress() + "%").setHeader("Progress");
+        grid.addComponentColumn(project -> {
+            // Creăm un layout pentru butoane
+            HorizontalLayout actionsLayout = new HorizontalLayout();
+            actionsLayout.setSpacing(true); // Spațiere între butoane
+            actionsLayout.setWidthFull(); // Layout-ul ocupă întreaga lățime a celulei
+            actionsLayout.setJustifyContentMode(JustifyContentMode.START); // Aliniem butoanele la început
 
+            // Creăm butonul pentru vizualizarea clientului
+            Button viewClientButton = new Button("View Client", click -> {
+                getUI().ifPresent(ui -> ui.navigate("clients/details/" + project.getClientId()));
+            });
+
+            // Creăm butonul pentru vizualizarea echipei
+            Button viewTeamButton = new Button("View Team", click -> {
+                getUI().ifPresent(ui -> ui.navigate("teams/details/" + project.getTeamId()));
+            });
+// Creăm butonul pentru vizualizarea rapoartelor
+            Button viewReportsButton = new Button("View Reports", click -> {
+                getUI().ifPresent(ui -> ui.navigate("reports/details/" + project.getProjectId()));
+            });
+
+            // Adăugăm butoanele în layout
+            actionsLayout.add(viewClientButton, viewTeamButton, viewReportsButton);
+            return actionsLayout;
+        }).setHeader("Actions").setFlexGrow(0).setAutoWidth(true); // Configurăm coloana
         addProjectButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(FormProjectView.class)));
         editProjectButton.addClickListener(e -> editSelectedProject());
         deleteProjectButton.addClickListener(e -> deleteSelectedProject());
@@ -98,4 +125,37 @@ public class NavigableGridProjectsView extends VerticalLayout {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         return formatter.format(date);
     }
+    private HorizontalLayout createActionsButtons(ProjectDTO project) {
+        Button viewClientButton = new Button("View Client", e -> viewClientDetails(project));
+        Button viewTeamButton = new Button("View Team", e -> viewTeamDetails(project));
+        Button viewReportsButton = new Button("View Reports", e -> viewProjectReports(project));
+
+        return new HorizontalLayout(viewClientButton, viewTeamButton, viewReportsButton);
+    }
+    private void viewClientDetails(ProjectDTO project) {
+        if (project.getClientId() != null) {
+            getUI().ifPresent(ui -> ui.navigate(ClientDetailsView.class, project.getClientId()));
+        } else {
+            Notification.show("No client associated with this project.", 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    private void viewProjectReports(ProjectDTO project) {
+        if (project.getProjectId() != null) {
+            getUI().ifPresent(ui -> ui.navigate(ReportsView.class, project.getProjectId()));
+        } else {
+            Notification.show("No reports associated with this project.", 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    private void viewTeamDetails(ProjectDTO project) {
+        if (project.getTeamId() != null) {
+            getUI().ifPresent(ui -> ui.navigate(TeamDetailsView.class, project.getTeamId()));
+        } else {
+            Notification.show("No team associated with this project.", 3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+
+
 }

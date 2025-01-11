@@ -17,4 +17,6 @@ public interface IEmployeeService {
     List<EmployeeDTO> getEmployeesWithSalaryGreaterThan(float salary);
     List<EmployeeDTO> getEmployeesByTeamId(Integer teamId);
     List<EmployeeDTO> getEmployeesWithoutTeam();
+    void updateEmployeeAvailability(Integer employeeId, boolean isAvailable);
+
 }

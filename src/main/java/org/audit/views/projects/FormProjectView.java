@@ -146,12 +146,25 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
                         localDate -> localDate == null ? null : DateUtilAPI.asDate(localDate),
                         date -> date == null ? null : DateUtilAPI.asLocalDate(date)
                 )
+                .withValidator(startDate -> {
+                    if (endDateField.getValue() != null) {
+                        return !startDate.after(DateUtilAPI.asDate(endDateField.getValue()));
+                    }
+                    return true;
+                }, "Start date must be before end date")
                 .bind(ProjectDTO::getStartDate, ProjectDTO::setStartDate);
+
         binder.forField(endDateField)
                 .withConverter(
                         localDate -> localDate == null ? null : DateUtilAPI.asDate(localDate),
                         date -> date == null ? null : DateUtilAPI.asLocalDate(date)
                 )
+                .withValidator(endDate -> {
+                    if (startDateField.getValue() != null) {
+                        return !endDate.before(DateUtilAPI.asDate(startDateField.getValue()));
+                    }
+                    return true;
+                }, "End date must be after start date")
                 .bind(ProjectDTO::getEndDate, ProjectDTO::setEndDate);
         binder.forField(statusField).bind(ProjectDTO::getStatus, ProjectDTO::setStatus);
         binder.forField(progressField)

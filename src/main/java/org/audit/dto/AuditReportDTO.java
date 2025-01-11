@@ -21,4 +21,52 @@ public class AuditReportDTO {
         this.submissionDate = submissionDate;
         this.authorId = authorId;
     }
+
+    public Integer getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Integer reportId) {
+        this.reportId = reportId;
+    }
+
+    public Integer getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public Date getSubmissionDate() {
+        return submissionDate;
+    }
+
+    public void setSubmissionDate(Date submissionDate) {
+        this.submissionDate = submissionDate;
+    }
+
+    public Integer getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Integer authorId) {
+        this.authorId = authorId;
+    }
+
+    public List<VulnerabilityDTO> getVulnerabilities() {
+        return vulnerabilities;
+    }
+
+    public void setVulnerabilities(List<VulnerabilityDTO> vulnerabilities) {
+        this.vulnerabilities = vulnerabilities;
+    }
 }

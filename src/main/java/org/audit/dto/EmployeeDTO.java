@@ -1,15 +1,26 @@
 package org.audit.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class EmployeeDTO {
     private Integer employeeId;
     private String name;
-    private EmployeeRole role;
+    private String role;
     private float salary;
-    private boolean isAvailable;
+    private boolean available; // Redenumit din isAvailable în available
     private Integer teamId;
+
+    // Getter și Setter pentru available
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
 
     public Integer getEmployeeId() {
         return employeeId;
@@ -27,11 +38,11 @@ public class EmployeeDTO {
         this.name = name;
     }
 
-    public EmployeeRole getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(EmployeeRole role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -49,25 +60,5 @@ public class EmployeeDTO {
 
     public void setTeamId(Integer teamId) {
         this.teamId = teamId;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
-    }
-
-    public EmployeeDTO(Integer employeeId, String name, EmployeeRole role, boolean isAvailable, float salary, Integer teamId) {
-        this.employeeId = employeeId;
-        this.name = name;
-        this.role = role;
-        this.isAvailable = isAvailable;
-        this.salary = salary;
-        this.teamId = teamId;
-    }
-
-    public EmployeeDTO() {
     }
 }
