@@ -16,9 +16,13 @@ import org.audit.dto.EmployeeDTO;
 import org.audit.services.IAuditTeamService;
 import org.audit.services.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
+@Scope("prototype")
 @Route("teams/details")
 @PageTitle("Team Details")
 public class TeamDetailsView extends VerticalLayout implements HasUrlParameter<Integer> {
@@ -63,9 +67,19 @@ public class TeamDetailsView extends VerticalLayout implements HasUrlParameter<I
                 Button toggleButton = new Button(employee.isAvailable() ? "Set as Unavailable" : "Set as Available");
                 toggleButton.addClickListener(e -> toggleEmployeeAvailability(employee));
                 return toggleButton;
-            })).setHeader("Actions");
+            })).setHeader("Actions").setAutoWidth(true).setFlexGrow(0);
 
-            add(title, teamNameField, memberGrid);
+            // Configurăm dimensiunea grilei
+            memberGrid.setWidthFull();
+            memberGrid.setHeight("300px");
+            memberGrid.getStyle().set("overflow-x", "auto");
+
+            // Adăugăm grila într-un container cu scroll
+            VerticalLayout gridContainer = new VerticalLayout(memberGrid);
+            gridContainer.setWidthFull();
+            gridContainer.setPadding(false);
+
+            add(title, teamNameField, gridContainer);
         } else {
             add(new H1("Team not found."));
         }
@@ -79,7 +93,7 @@ public class TeamDetailsView extends VerticalLayout implements HasUrlParameter<I
 
             // Afișăm o notificare și actualizăm grila
             Notification.show("Employee availability updated successfully!", 3000, Notification.Position.TOP_CENTER);
-            refreshTeamMembers(); // Reîmprospătăm lista de membri
+            refreshTeamMembers();
         } catch (Exception e) {
             Notification.show("Error updating availability: " + e.getMessage(), 5000, Notification.Position.TOP_CENTER);
         }

@@ -10,13 +10,17 @@ import com.vaadin.flow.router.Route;
 import org.audit.dto.AuditReportDTO;
 import org.audit.services.IAuditReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
-
+@Component
+@Scope("prototype")
 @Route("reports/details")
 @PageTitle("Reports")
 public class ReportsView extends VerticalLayout implements HasUrlParameter<Integer> {
-
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     private final IAuditReportService auditReportService;
 
     @Autowired
@@ -37,10 +41,16 @@ public class ReportsView extends VerticalLayout implements HasUrlParameter<Integ
             add(new H1("Reports"));
             Grid<AuditReportDTO> grid = new Grid<>(AuditReportDTO.class);
             grid.setItems(reports);
-            grid.setColumns("reportId", "filePath", "submissionDate", "authorId");
+            grid.setColumns("reportId", "filePath", "authorId");
+
+            // Formatarea datei în format zz/ll/aaaa
+            grid.addColumn(report -> DATE_FORMAT.format(report.getSubmissionDate()))
+                    .setHeader("Submission Date");
+
             add(grid);
         } else {
             add(new H1("No reports found for this project."));
         }
     }
+
 }

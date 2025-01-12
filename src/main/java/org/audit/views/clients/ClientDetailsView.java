@@ -35,10 +35,26 @@ public class ClientDetailsView extends VerticalLayout implements HasUrlParameter
 
         if (client != null) {
             add(new H1("Client Details"));
-            add(new TextField("Name", client.getName()));
-            add(new TextField("Contact Person", client.getContactPerson()));
-            add(new TextField("Email", client.getContactEmail()));
-            add(new TextArea("Description", client.getDescription()));
+
+            // Creăm câmpurile read-only
+            TextField nameField = new TextField("Name");
+            nameField.setValue(client.getName());
+            nameField.setReadOnly(true);
+
+            TextField contactPersonField = new TextField("Contact Person");
+            contactPersonField.setValue(client.getContactPerson());
+            contactPersonField.setReadOnly(true);
+
+            TextField emailField = new TextField("Email");
+            emailField.setValue(client.getContactEmail());
+            emailField.setReadOnly(true);
+
+            TextArea descriptionField = new TextArea("Description");
+            descriptionField.setValue(client.getDescription());
+            descriptionField.setReadOnly(true);
+
+            // Adăugăm câmpurile în layout
+            add(nameField, contactPersonField, emailField, descriptionField);
         } else {
             add(new H1("Client not found."));
         }
