@@ -200,7 +200,26 @@ public class FormProjectView extends VerticalLayout implements HasUrlParameter<I
             Notification.show("Project saved successfully!", 3000, Notification.Position.TOP_CENTER);
             getUI().ifPresent(ui -> ui.navigate(NavigableGridProjectsView.class));
         } catch (Exception ex) {
-            Notification.show("Error saving project: " + ex.getMessage(), 5000, Notification.Position.TOP_CENTER);
+            String errorMessage = ex.getMessage();
+
+            // Mesaj prietenos pentru eroarea "Team is already assigned to another project during this period."
+            if (errorMessage != null && errorMessage.contains("Team is already assigned to another project during this period")) {
+                Notification.show("The selected team is already assigned to another project in the specified time period. Please select a different team or adjust the project dates.",
+                        5000, Notification.Position.TOP_CENTER);
+            }
+            // Mesaj prietenos pentru alte excepții
+            else if (errorMessage != null && errorMessage.contains("Client with ID")) {
+                Notification.show("The client specified does not exist. Please select a valid client.",
+                        5000, Notification.Position.TOP_CENTER);
+            }
+            else if (errorMessage != null && errorMessage.contains("Project with ID")) {
+                Notification.show("The project you are trying to update does not exist.",
+                        5000, Notification.Position.TOP_CENTER);
+            }
+            else {
+                Notification.show("An unexpected error occurred: " + errorMessage, 5000, Notification.Position.TOP_CENTER);
+            }
         }
     }
+
 }

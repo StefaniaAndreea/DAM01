@@ -7,10 +7,9 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.audit.services.IAuditReportService;
-import org.audit.services.IClientService;
-import org.audit.services.IAuditTeamService;
-import org.audit.services.IEmployeeService;
+import org.audit.dto.ProjectDTO;
+import org.audit.services.*;
+import org.audit.views.layout.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ import org.audit.views.reports.ReportsView;
 
 @Component
 @Scope("prototype")
-@Route("projects/dashboard")
+@Route(value = "projects/dashboard", layout = MainLayout.class)
 @PageTitle("Project Dashboard")
 public class ProjectDashboardView extends VerticalLayout implements HasUrlParameter<Integer> {
 
@@ -28,14 +27,16 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
     private final IAuditTeamService auditTeamService;
     private final IEmployeeService employeeService;
     private final IAuditReportService auditReportService;
+    private final IProjectService projectService;
 
     @Autowired
     public ProjectDashboardView(IClientService clientService, IAuditTeamService auditTeamService,
-                                IEmployeeService employeeService, IAuditReportService auditReportService) {
+                                IEmployeeService employeeService, IAuditReportService auditReportService, IProjectService projectService) {
         this.clientService = clientService;
         this.auditTeamService = auditTeamService;
         this.employeeService = employeeService;
         this.auditReportService = auditReportService;
+        this.projectService = projectService;
 
         setWidthFull();
         setSpacing(false);
@@ -43,11 +44,18 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
 
     @Override
     public void setParameter(BeforeEvent event, Integer projectId) {
-        // Placeholder IDs (to be replaced with actual logic for retrieving clientId and teamId for the project)
-        Integer clientId = 1; // Replace with actual logic
-        Integer teamId = 1;   // Replace with actual logic
+        ProjectDTO project = projectService.getProjectById(projectId);
 
-        removeAll(); // Clear the layout
+        if (project == null) {
+            removeAll();
+            add(new H1("Project not found."));
+            return;
+        }
+
+        Integer clientId = project.getClientId();
+        Integer teamId = project.getTeamId();
+
+        removeAll();
         add(new H1("Project Dashboard"));
 
         createTopSection(clientId, teamId);
@@ -55,19 +63,15 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
     }
 
     private void createTopSection(Integer clientId, Integer teamId) {
-        // Secțiunea Client
         ClientDetailsView clientDetailsView = new ClientDetailsView(clientService);
         clientDetailsView.setParameter(null, clientId);
 
-        // Secțiunea Team
         TeamDetailsView teamDetailsView = new TeamDetailsView(auditTeamService, employeeService);
         teamDetailsView.setParameter(null, teamId);
 
-        // Configurăm dimensiunile pentru secțiuni
         clientDetailsView.setWidth("25%");
         teamDetailsView.setWidth("75%");
 
-        // Layout-ul pe rând
         HorizontalLayout topSection = new HorizontalLayout(clientDetailsView, teamDetailsView);
         topSection.setWidthFull();
         topSection.setSpacing(true);
@@ -77,11 +81,9 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
     }
 
     private void createBottomSection(Integer projectId) {
-        // Secțiunea Reports
         ReportsView reportsView = new ReportsView(auditReportService);
         reportsView.setParameter(null, projectId);
 
-        // Wrapper pentru layout
         VerticalLayout bottomSection = new VerticalLayout(reportsView);
         bottomSection.setWidthFull();
         bottomSection.getStyle().set("padding-left", "20px").set("padding-right", "20px");
