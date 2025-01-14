@@ -124,6 +124,14 @@ public class EmployeeRestServices {
     }
     // GET  http://localhost:8088/api/rest/app/employees/without-team
 
+    @PutMapping("/{employeeId}/availability/{isAvailable}")
+    public String updateEmployeeAvailability(
+            @PathVariable Integer employeeId,
+            @PathVariable boolean isAvailable) {
+        System.out.println("Received request to update availability for Employee ID: " + employeeId + " to: " + isAvailable);
+        employeeService.updateEmployeeAvailability(employeeId, isAvailable);
+        return "Employee availability updated successfully.";
+    }
 
     private EmployeeDTO convertToDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();

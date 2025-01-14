@@ -27,10 +27,10 @@ public class BD {
                 // Inserăm un Client
                 if (clientRepository.count() == 0) {
                     Client client = new Client();
-                    client.setName("Client Test");
-                    client.setContactPerson("John Doe");
-                    client.setContactEmail("john.doe@example.com");
-                    client.setDescription("Test client description");
+                    client.setName("Rotariu Anamaria");
+                    client.setContactPerson("Vavilin Vladiminr");
+                    client.setContactEmail("anamaria@example.com");
+                    client.setDescription("Student pasionat devenit client");
                     clientRepository.save(client);
                     System.out.println("Client inserat cu succes!");
                 }
@@ -38,14 +38,14 @@ public class BD {
                 // Inserăm o echipă de audit
                 if (auditTeamRepository.count() == 0) {
                     AuditTeam team = new AuditTeam();
-                    team.setTeamName("Team Alpha");
+                    team.setTeamName("Team SIA");
                     auditTeamRepository.save(team);
                     System.out.println("AuditTeam inserată cu succes!");
                 }
                 // Inserăm un angajat
                 if (employeeRepository.count() == 0) {
                     Employee employee = new Employee();
-                    employee.setName("Jane Doe");
+                    employee.setName("Sava Ștefania");
                     employee.setRole(Employee.EmployeeRole.PENTESTER);
                     employee.setSalary(4500);
                     employee.setAvailable(true);

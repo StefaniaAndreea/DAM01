@@ -68,8 +68,12 @@ public class EmployeeServiceImpl implements IEmployeeService {
         // Salvăm modificările
         return employeeRepository.save(existingEmployee);
     }
-
-
+    @Override
+    public void updateEmployeeAvailability(Integer employeeId, boolean isAvailable) {
+        Employee employee = getEmployeeById(employeeId);
+        employee.setAvailable(isAvailable);
+        employeeRepository.save(employee);
+    }
 
     @Override
     public void deleteEmployee(Integer employeeId) {
