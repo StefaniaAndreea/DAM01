@@ -23,6 +23,8 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     @Query("SELECT e FROM Employee e WHERE e.team.teamId = :teamId")
     List<Employee> findByTeamId(@Param("teamId") int teamId);
 
+
+
     List<Employee> findByIsAvailableFalse();
     @Query("SELECT e FROM Employee e WHERE e.team IS NULL")
     List<Employee> findEmployeesWithoutTeam();

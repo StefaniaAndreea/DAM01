@@ -5,6 +5,7 @@ import com.audit_management_app.auditmanagement_DAM.domain.projects.Project;
 import com.audit_management_app.auditmanagement_DAM.domain.projects.Task;
 import com.audit_management_app.auditmanagement_DAM.domain.services.*;
 import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.AuditTeam;
+import com.audit_management_app.auditmanagement_DAM.domain.teamsusers.Employee;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -33,7 +35,8 @@ public class testProjectCOMPLETED {
 
     @Autowired
     private ITaskService taskService;
-
+@Autowired
+private IEmployeeRepository employeeRepository;
     @Autowired
     private IProjectService projectService;
     private static final Logger logger = LoggerFactory.getLogger(testProjectCOMPLETED.class);
@@ -99,5 +102,6 @@ public class testProjectCOMPLETED {
         assertEquals("Archived projects cannot be modified.", exception.getMessage());
         logger.error("Exception occurred: {}", exception.getMessage());
     }
+
 
 }

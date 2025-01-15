@@ -123,6 +123,12 @@ public class TaskRestServices {
     }
 
     // DELETE http://localhost:8088/api/rest/app/tasks/{taskId}
+    @PutMapping("/{taskId}/update-status/{status}")
+    public String updateTaskStatus(@PathVariable Integer taskId, @PathVariable Task.TaskStatus status) {
+        taskService.updateTaskStatus(taskId, status);
+        return "Task with ID " + taskId + " status updated to " + status + ".";
+    }
+
 
     private Task convertToEntity(TaskDTO taskDTO) {
         Task task = new Task();
@@ -149,4 +155,5 @@ public class TaskRestServices {
         }
         return dto;
     }
+
 }

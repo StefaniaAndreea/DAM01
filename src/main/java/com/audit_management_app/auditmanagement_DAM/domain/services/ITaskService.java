@@ -18,4 +18,6 @@ public interface ITaskService {
     Task updateTask(Integer taskId, Task task);
     void deleteTask(Integer taskId);
     List<Task> findAllTasks();
+    void updateTaskStatus(Integer taskId, Task.TaskStatus status);
+
 }

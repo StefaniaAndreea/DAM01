@@ -215,4 +215,24 @@ public class TaskServiceImpl implements ITaskService {
     public List<Task> findAllTasks() {
         return taskRepository.findAll();
     }
+    @Override
+    @Transactional
+    public void updateTaskStatus(Integer taskId, Task.TaskStatus status) {
+        // Găsim task-ul în baza de date
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task not found with ID: " + taskId));
+
+        // Actualizăm statusul
+        task.setStatus(status);
+        taskRepository.save(task);
+
+        logger.info("Updated status for task ID {} to {}", taskId, status);
+
+        // Verificăm dacă toate task-urile proiectului sunt completate
+        checkAndSetProjectCompletion(task);
+
+        // Verificăm dacă toate task-urile angajatului sunt completate (dacă există un angajat asignat)
+        checkAndSetEmployeeAvailability(task);
+    }
+
 }
