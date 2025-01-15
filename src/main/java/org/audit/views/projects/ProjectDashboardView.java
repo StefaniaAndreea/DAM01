@@ -10,12 +10,13 @@ import com.vaadin.flow.router.Route;
 import org.audit.dto.ProjectDTO;
 import org.audit.services.*;
 import org.audit.views.layout.MainLayout;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.audit.views.tasks.ProjectTasksView;
 import org.audit.views.clients.ClientDetailsView;
 import org.audit.views.teams.TeamDetailsView;
 import org.audit.views.reports.ReportsView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
@@ -28,15 +29,18 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
     private final IEmployeeService employeeService;
     private final IAuditReportService auditReportService;
     private final IProjectService projectService;
+    private final ITaskService taskService;
 
     @Autowired
     public ProjectDashboardView(IClientService clientService, IAuditTeamService auditTeamService,
-                                IEmployeeService employeeService, IAuditReportService auditReportService, IProjectService projectService) {
+                                IEmployeeService employeeService, IAuditReportService auditReportService,
+                                IProjectService projectService, ITaskService taskService) {
         this.clientService = clientService;
         this.auditTeamService = auditTeamService;
         this.employeeService = employeeService;
         this.auditReportService = auditReportService;
         this.projectService = projectService;
+        this.taskService = taskService;
 
         setWidthFull();
         setSpacing(false);
@@ -59,6 +63,7 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
         add(new H1("Project Dashboard"));
 
         createTopSection(clientId, teamId);
+        createTasksSection(projectId);
         createBottomSection(projectId);
     }
 
@@ -78,6 +83,15 @@ public class ProjectDashboardView extends VerticalLayout implements HasUrlParame
         topSection.getStyle().set("padding-left", "20px").set("padding-right", "20px");
 
         add(topSection);
+    }
+
+    private void createTasksSection(Integer projectId) {
+        ProjectTasksView tasksView = new ProjectTasksView(taskService, employeeService, projectId);
+
+        tasksView.setWidthFull();
+        tasksView.getStyle().set("padding-left", "20px").set("padding-right", "20px");
+
+        add(tasksView);
     }
 
     private void createBottomSection(Integer projectId) {
