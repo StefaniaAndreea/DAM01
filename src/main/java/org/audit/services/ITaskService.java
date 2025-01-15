@@ -16,4 +16,5 @@ public interface ITaskService {
     List<TaskDTO> getTasksByEmployee(Integer employeeId);
     List<TaskDTO> getTasksByProject(Integer projectId);
     List<TaskDTO> getAllTasks();
+    void updateTaskStatus(Integer taskId, TaskStatus status);
 }

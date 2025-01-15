@@ -159,6 +159,11 @@ public class TaskService implements ITaskService {
 
         return List.of(tasks);
     }
+    @Override
+    public void updateTaskStatus(Integer taskId, TaskStatus status) {
+        logger.info("Updating status for task with ID: " + taskId + " to: " + status);
+        restTemplate.put(backendUrl + "/" + taskId + "/update-status/" + status.name(), null);
+    }
 
     private HttpHeaders generateHeaders() {
         HttpHeaders headers = new HttpHeaders();

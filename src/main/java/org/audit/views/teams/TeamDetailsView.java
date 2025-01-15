@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -45,7 +46,13 @@ public class TeamDetailsView extends VerticalLayout implements HasUrlParameter<I
     @Override
     public void setParameter(BeforeEvent event, Integer teamId) {
         team = auditTeamService.getTeamById(teamId);
-        List<EmployeeDTO> teamMembers = employeeService.getEmployeesByTeamId(teamId);
+
+        // Obținem lista de membri ai echipei și eliminăm duplicatele
+        List<EmployeeDTO> teamMembers = employeeService.getEmployeesByTeamId(teamId)
+                .stream()
+                .distinct() // Elimină duplicatele bazate pe hashCode și equals
+                .collect(Collectors.toList());
+
         initializeView(team, teamMembers);
     }
 
@@ -101,7 +108,10 @@ public class TeamDetailsView extends VerticalLayout implements HasUrlParameter<I
 
     private void refreshTeamMembers() {
         if (team != null) {
-            List<EmployeeDTO> updatedTeamMembers = employeeService.getEmployeesByTeamId(team.getTeamId());
+            List<EmployeeDTO> updatedTeamMembers = employeeService.getEmployeesByTeamId(team.getTeamId())
+                    .stream()
+                    .distinct() // Elimină duplicatele
+                    .collect(Collectors.toList());
             memberGrid.setItems(updatedTeamMembers);
         }
     }
