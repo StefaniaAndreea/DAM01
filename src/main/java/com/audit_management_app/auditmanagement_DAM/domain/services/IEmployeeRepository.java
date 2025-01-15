@@ -20,9 +20,8 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Integer> {
     List<Employee> findBySalaryGreaterThan(@Param("salary") float salary);
 
     // Găsește angajați care aparțin unei echipe specifice
-    @Query("SELECT e FROM Employee e WHERE e.team.teamId = :teamId")
+    @Query("SELECT DISTINCT e FROM Employee e WHERE e.team.teamId = :teamId")
     List<Employee> findByTeamId(@Param("teamId") int teamId);
-
 
 
     List<Employee> findByIsAvailableFalse();

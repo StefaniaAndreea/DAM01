@@ -12,4 +12,7 @@ public class EmployeeDTO {
     private float salary;
     private boolean isAvailable;
     private Integer teamId;
+
 }
+
+
