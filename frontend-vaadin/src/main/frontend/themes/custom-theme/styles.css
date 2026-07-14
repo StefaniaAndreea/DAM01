@@ -1,0 +1,10 @@
+.v-grid {
+    flex-grow: 1;
+    height: 100%; /* Asigură că grila folosește toată înălțimea */
+}
+
+.v-vertical-layout {
+    height: 100vh; /* Asigură că layout-ul vertical folosește întreaga înălțime a ferestrei */
+    display: flex;
+    flex-direction: column;
+}
